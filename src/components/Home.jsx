@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaSignOutAlt } from "react-icons/fa";
+import { FaSearch, FaSignOutAlt } from "react-icons/fa";
 import { IoGridOutline, IoListOutline } from "react-icons/io5";
 import { auth } from "../utils/firebase";
 import { signOut } from "firebase/auth";
@@ -13,6 +13,7 @@ const Home = () => {
 
   const[tasks,setTasks]=useState([]);
   const[isModalOpen,setIsModelOpen]=useState(false);
+  const[searchQuery, setSearchQuery] = useState("");
 
 
   // Logout Handler
@@ -26,6 +27,12 @@ const Home = () => {
   const addTask=(newTask)=>{
     setTasks([...tasks, {id:tasks.length+1, ...newTask}])
   }
+
+
+  const filteredTasks = tasks.filter((task) =>
+    task.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* 🔷 Header Navbar */}
@@ -95,9 +102,16 @@ const Home = () => {
           </div>
 
           <div className="flex gap-3">
-          <button 
-            className=" text-black px-2 py-2 rounded-md border border-b-black "
-          >🔍 Search</button>
+          <div className="flex items-center border rounded-lg px-3 py-2 bg-white shadow-md">
+            <FaSearch className="text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="ml-2 outline-none w-full"
+            />
+          </div>
           <button 
             className="bg-violet-600 text-white px-4 py-2 rounded-md"
             onClick={()=>setIsModelOpen(true)}  
@@ -108,7 +122,7 @@ const Home = () => {
 
       {/* 🔷 Content Section */}
       <div className="p-4">
-        {view === "list" ? <ListView tasks={tasks} /> : <BoardView tasks={tasks} />}
+        {view === "list" ? <ListView tasks={filteredTasks} /> : <BoardView tasks={filteredTasks} />}
       </div>
       {isModalOpen && <AddTaskModal onClose={()=>setIsModelOpen(false)} addTask={addTask} />}
     </div>
