@@ -5,17 +5,15 @@ import { auth } from "../utils/firebase";
 import { signOut } from "firebase/auth";
 import ListView from "./ListVIew";
 import BoardView from "./BoardView";
+import AddTaskModal from "./AddTaskModal";
 
 const Home = () => {
   const [view, setView] = useState("list"); // "list" or "board"
   const user = auth.currentUser; // Get user info from Firebase
 
-  // Dummy tasks
-  const tasks = [
-    { id: 1, name: "Task 1", dueDate: "2025-02-05", category: "Work", status: "Todo" },
-    { id: 2, name: "Task 2", dueDate: "2025-02-06", category: "Personal", status: "InProgress" },
-    { id: 3, name: "Task 3", dueDate: "2025-02-10", category: "Study", status: "Completed" },
-  ];
+  const[tasks,setTasks]=useState([]);
+  const[isModalOpen,setIsModelOpen]=useState(false);
+
 
   // Logout Handler
   const handleLogout = () => {
@@ -24,6 +22,10 @@ const Home = () => {
     window.location.href = "/"; // Redirect to login
   };
 
+
+  const addTask=(newTask)=>{
+    setTasks([...tasks, {id:tasks.length+1, ...newTask}])
+  }
   return (
     <div className="min-h-screen bg-gray-100">
       {/* 🔷 Header Navbar */}
@@ -93,8 +95,13 @@ const Home = () => {
           </div>
 
           <div className="flex gap-3">
-          <button className=" text-black px-2 py-2 rounded-md border border-b-black ">🔍 Search</button>
-          <button className="bg-violet-600 text-white px-4 py-2 rounded-md">  Add Task</button>
+          <button 
+            className=" text-black px-2 py-2 rounded-md border border-b-black "
+          >🔍 Search</button>
+          <button 
+            className="bg-violet-600 text-white px-4 py-2 rounded-md"
+            onClick={()=>setIsModelOpen(true)}  
+          >  Add Task</button>
           
         </div>
       </div>
@@ -103,6 +110,7 @@ const Home = () => {
       <div className="p-4">
         {view === "list" ? <ListView tasks={tasks} /> : <BoardView tasks={tasks} />}
       </div>
+      {isModalOpen && <AddTaskModal onClose={()=>setIsModelOpen(false)} addTask={addTask} />}
     </div>
   );
 };
