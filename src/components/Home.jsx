@@ -1,9 +1,111 @@
-import React from 'react'
+import React, { useState } from "react";
+import { FaSignOutAlt } from "react-icons/fa";
+import { IoGridOutline, IoListOutline } from "react-icons/io5";
+import { auth } from "../utils/firebase";
+import { signOut } from "firebase/auth";
+import ListView from "./ListVIew";
+import BoardView from "./BoardView";
 
 const Home = () => {
-  return (
-    <div>Home</div>
-  )
-}
+  const [view, setView] = useState("list"); // "list" or "board"
+  const user = auth.currentUser; // Get user info from Firebase
 
-export default Home
+  // Dummy tasks
+  const tasks = [
+    { id: 1, name: "Task 1", dueDate: "2025-02-05", category: "Work", status: "Todo" },
+    { id: 2, name: "Task 2", dueDate: "2025-02-06", category: "Personal", status: "InProgress" },
+    { id: 3, name: "Task 3", dueDate: "2025-02-10", category: "Study", status: "Completed" },
+  ];
+
+  // Logout Handler
+  const handleLogout = () => {
+    signOut(auth);
+    localStorage.removeItem("email");
+    window.location.href = "/"; // Redirect to login
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {/* 🔷 Header Navbar */}
+      <div className="bg-white shadow-md p-7 flex justify-between items-center">
+        <h1 className="text-2xl font-bold">TaskBuddy</h1>
+        <div className="flex flex-col items-center">
+        <div className="flex items-center gap-3">
+          <img
+            src={user?.photoURL || "https://cdn-icons-png.flaticon.com/512/6858/6858504.png"}
+            alt="User"
+            className="w-10 h-10 rounded-full border"
+          />
+          <div className="text-gray-700 font-medium">{user?.displayName}</div>
+        </div>
+
+        {/* 🔹 Logout Button (Placed Below) */}
+        <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-3 py-1 rounded-lg flex items-center gap-1 mt-2"
+          >
+            <FaSignOutAlt /> Logout
+          </button>
+        </div>
+      </div>
+
+      <div>
+      <div className="flex gap-2">
+          <button
+            className={`px-4 py-2 rounded-md flex items-center gap-1 ${
+              view === "list" ? " text-black font-bold" : "bg-gray-200"
+            }`}
+            onClick={() => setView("list")}
+          >
+            <IoListOutline className="text-lg" /> List View
+          </button>
+          <button
+            className={`px-4 py-2 rounded-md flex items-center gap-1 ${
+              view === "board" ? "text-black font-bold" : "bg-gray-200"
+            }`}
+            onClick={() => setView("board")}
+          >
+            <IoGridOutline className="text-lg" /> Board View
+          </button>
+        </div>
+      </div>
+
+      {/* 🔷 View Toggle */}
+      <div className="flex justify-between items-center p-4 gap-3 bg-white shadow-md mt-4 mx-4 rounded-lg">
+        
+
+        {/* 🔷 Filters & Actions */}
+        <div className="flex items-center gap-3">
+
+          <h3>Filter By: </h3>
+
+          <select className="border p-2 rounded-md">
+            <option>All Categories</option>
+            <option>Work</option>
+            <option>Personal</option>
+          </select>
+          <select className="border p-2 rounded-md">
+            <option>Due Date</option>
+            <option>Today</option>
+            <option>This Week</option>
+            <option>This Month</option>
+          </select>
+          </div>
+
+          <div className="flex gap-3">
+          <button className=" text-black px-2 py-2 rounded-md border border-b-black ">🔍 Search</button>
+          <button className="bg-violet-600 text-white px-4 py-2 rounded-md">  Add Task</button>
+          
+        </div>
+      </div>
+
+      {/* 🔷 Content Section */}
+      <div className="p-4">
+        {view === "list" ? <ListView tasks={tasks} /> : <BoardView tasks={tasks} />}
+      </div>
+    </div>
+  );
+};
+
+
+export default Home;
