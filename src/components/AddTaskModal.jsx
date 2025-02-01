@@ -1,102 +1,115 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 
-const AddTaskModal = ({onClose, addTask}) => {
+const AddTaskModal = ({ onClose, addTask,taskCounts }) => {
+  const [taskData, setTaskData] = useState({
+    title: "",
+    description: "",
+    dueDate: "",
+    category: "Work",
+    status: "Todo",
+    attachment: null,
+  });
 
-    // const[taskTitle, setTaskTitle]=useState("");
-    // const[description, setDescription]=useState("");
-    // const[category, setCategory]=useState("work");
-    // const[dueDate, setDueDate]=useState("");
-    // const[status, setStatus]=useState("");
-    // const[attachment, setAttachment]=useState(null);
-  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setTaskData({ ...taskData, [name]: value });
+  };
 
-    const [task, setTask] = useState({ name: "", dueDate: "", category: "Work", status: "Todo" });
-    
-    const handleChange=(e)=>{
-        setTask({...task, [e.target.name]:e.target.value})
+  const handleFileChange = (e) => {
+    setTaskData({ ...taskData, attachment: e.target.files[0] });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!taskData.title || !taskData.dueDate) {
+      alert("Title and Due Date are required!");
+      return;
     }
+    addTask(taskData);
+    onClose();
+  };
 
-    const handleSubmit=(e)=>{
-        e.preventDefault();
-        addTask(task);
-        onClose()
-    }
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+      <div className="bg-white p-6 rounded-lg w-96">
+        <h2 className="text-xl font-bold mb-4">Create New Task</h2>
 
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          {/* Task Title */}
+          <label className="font-medium">Title *</label>
+          <input
+            type="text"
+            name="title"
+            value={taskData.title}
+            onChange={handleChange}
+            required
+            className="border p-2 rounded"
+            placeholder="Enter task title..."
+          />
 
+          {/* Description */}
+          <label className="font-medium">Description</label>
+          <textarea
+            name="description"
+            value={taskData.description}
+            onChange={handleChange}
+            className="border p-2 rounded"
+            placeholder="Enter task details..."
+          />
 
-    return (
-    <div className='fixed inset-0 flex justify-center items-center bg-gray-900 bg-opacity-50'>
-        <div className='bg-white p-6 rounded-lg shadow-md'>
-            <h2 className="text-xl font-semibold">Create Task</h2>
-        
-            <form 
-                onSubmit={handleSubmit}
-                className='flex flex-col gap-3'>
-                <input 
-                    type="text"
-                    className='w-full p-2 mt-3 border rounded-md'
-                    placeholder='Task Title'
-                    name='name'
-                    value={task.name}
-                    onChange={handleChange}
-                />
-                <input type="date" name="dueDate" value={task.dueDate} onChange={handleChange} className="border p-2 rounded" required />
-                <select name="category" value={task.category} onChange={handleChange} className="border p-2 rounded">
-                    <option>Work</option>
-                    <option>Personal</option>
-                </select>
-                <button type="submit" className="bg-blue-500 text-white p-2 rounded">Add Task</button>
-            </form>
+          {/* Due Date */}
+          <label className="font-medium">Due Date *</label>
+          <input
+            type="date"
+            name="dueDate"
+            value={taskData.dueDate}
+            onChange={handleChange}
+            required
+            className="border p-2 rounded"
+          />
 
-                <button onClick={onClose} className="mt-2 text-gray-500">Cancel</button>
+          {/* Category */}
+          <label className="font-medium">Category</label>
+          <select
+            name="category"
+            value={taskData.category}
+            onChange={handleChange}
+            className="border p-2 rounded"
+          >
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+          </select>
 
-                {/* <div >
-                    <button
-                        type='button'
-                            
-                    >
-                        Work
-                    </button>
-                    <button
-                        type='button'
+          {/* Status */}
+          <label className="font-medium">Status</label>
+          <select
+            name="status"
+            value={taskData.status}
+            onChange={handleChange}
+            className="border p-2 rounded"
+            >
+            <option value="Todo">Todo ({taskCounts["Todo"]})</option>
+            <option value="In Progress">In Progress ({taskCounts["In Progress"]})</option>
+            <option value="Completed">Completed ({taskCounts["Completed"]})</option>
+        </select>
 
-                    >
-                        Personal
-                    </button>
-                </div>
+          {/* File Attachment */}
+          <label className="font-medium">Attachment</label>
+          <input type="file" onChange={handleFileChange} className="border p-2 rounded" />
 
-                <div>
-                    <label>Due On*</label>
-                    <input
-                        type='date'
-                        className="w-full p-2 mt-1 border rounded-md"
-                    />
-                </div> */}
-
-                {/* <div>
-                    <label>Task Status*</label>
-                    <select
-                        className="w-full p-2 mt-1 border rounded-md"
-                    >
-                        <option>choose</option>
-                        <option>ToDo</option>
-                        <option>InProgress</option>
-                        <option>Completed</option>
-                    </select>
-                </div> */}
-
-                {/* <div>
-                    <label>Attachment</label>
-                    <input
-                        type='file'
-                        className="w-full p-2 mt-1 border rounded-md"
-                    />
-                </div> */}
-
-            
-        </div>
+          {/* Buttons */}
+          <div className="flex justify-end gap-2 mt-4">
+            <button type="button" onClick={onClose} className="bg-gray-300 px-4 py-2 rounded">
+              Cancel
+            </button>
+            <button type="submit" className="bg-violet-600 text-white px-4 py-2 rounded">
+              Create Task
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default AddTaskModal
+export default AddTaskModal;
