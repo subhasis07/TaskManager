@@ -1,6 +1,6 @@
 import TaskList from "./TaskList";
 
-const ListView = ({tasks, taskCounts}) => {
+const ListView = ({tasks, taskCounts, deleteTask, modifyTask}) => {
     const categories = ["Todo", "In Progress", "Completed"];
 
 
@@ -13,7 +13,9 @@ const ListView = ({tasks, taskCounts}) => {
 
             {/* Filter tasks based on status and render TaskList */}
             {tasks.filter(task => task.status === status).length > 0 ? (
-              <TaskList tasks={tasks.filter(task => task.status === status)} />
+              <TaskList tasks={tasks.filter(task => task.status === status)} deleteTask={deleteTask} 
+              modifyTask={modifyTask} />
+            
             ) : (
               <div className="border-t p-4 text-gray-500">No tasks in {status}</div>
             )}

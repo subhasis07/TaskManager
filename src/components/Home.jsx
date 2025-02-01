@@ -40,6 +40,14 @@ const Home = () => {
     task.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const deleteTask = (taskId) => {
+    setTasks(tasks.filter((task) => task.id !== taskId));
+  };
+  
+  const modifyTask = (taskId, updatedTask) => {
+    setTasks(tasks.map((task) => (task.id === taskId ? { ...task, ...updatedTask } : task)));
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* 🔷 Header Navbar */}
@@ -129,7 +137,12 @@ const Home = () => {
 
       {/* 🔷 Content Section */}
       <div className="p-4">
-        {view === "list" ? <ListView tasks={filteredTasks} taskCounts={taskCounts} /> : <BoardView tasks={filteredTasks} taskCounts={taskCounts}/>}
+        {view === "list" ?
+         <ListView tasks={filteredTasks} taskCounts={taskCounts} deleteTask={deleteTask} 
+         modifyTask={modifyTask} /> 
+         : 
+         <BoardView tasks={filteredTasks} taskCounts={taskCounts} deleteTask={deleteTask} 
+         modifyTask={modifyTask} />}
       </div>
       {isModalOpen && <AddTaskModal onClose={()=>setIsModelOpen(false)} addTask={addTask} taskCounts={taskCounts} />}
     </div>
